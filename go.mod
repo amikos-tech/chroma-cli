@@ -1,6 +1,6 @@
 module chroma
 
-go 1.22
+go 1.20
 
 require (
 	github.com/go-playground/validator/v10 v10.19.0

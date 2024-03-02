@@ -1,0 +1,40 @@
+name: package
+on:
+  release:
+    types: [published]
+jobs:
+  xgo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        uses: crazy-max/ghaction-xgo@v3
+        with:
+          go_version: 1.22
+          dest: build
+          prefix: chroma
+          targets: windows/amd64,linux/amd64,linux/arm64,darwin/arm64
+          ldflags: -s -w
+  release_assets:
+    needs: xgo
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      # Build steps for your application
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: program-name-${{ matrix.config.os }}
+          asset_path: ./path/to/your/file
+          asset_content_type: application/octet-stream
