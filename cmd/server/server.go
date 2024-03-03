@@ -2,12 +2,13 @@ package server
 
 import (
 	"fmt"
+	"os"
+	"strconv"
+
 	"github.com/charmbracelet/huh"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"strconv"
 )
 
 const (
@@ -38,7 +39,7 @@ func getPort(changed bool) (int, error) {
 		port = DefaultPort
 	}
 	var actualPort int
-	//if port == "" {
+	// if port == "" {
 	//	iPort := huh.NewInput().Value(&port).Title("Port").Placeholder(DefaultPort)
 	//	err := iPort.Run()
 	//	if err != nil {
@@ -68,13 +69,13 @@ func getHost(changed bool) (string, error) {
 		return "", fmt.Errorf("invalid host: %v", err)
 	}
 
-	//if host == "" {
+	// if host == "" {
 	//	iHost := huh.NewInput().Value(&host).Title("Host").Placeholder(DefaultHost)
 	//	err := iHost.Run()
 	//	if err != nil {
 	//		return "", fmt.Errorf("unable to get host: %v", err)
 	//	}
-	//if host == "" {
+	// if host == "" {
 	//		host = DefaultHost
 	//	}
 	//}
@@ -82,18 +83,6 @@ func getHost(changed bool) (string, error) {
 	return host, nil
 }
 
-// getSecure is used for Interactive shell mode
-func getSecure(changed bool) (bool, error) {
-	secure := Secure
-
-	//err := huh.NewConfirm().Title("Use secure connection (https)?").Affirmative("Yes!").Negative("No.").Value
-	//if err != nil {
-	//	return false, fmt.Errorf("unable to get confirmation: %v", err)
-	//}
-	return secure, nil
-}
-
-// chroma server add <alias> -h localhost -p 8080
 var Host string
 var Port string
 var Overwrite bool
@@ -104,7 +93,7 @@ var AddCommand = &cobra.Command{
 	Short: "Add new or Update existing Chroma server",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		//get the first argument tht is our alias
+		// get the first argument tht is our alias
 		alias := args[0]
 		hostChanged := cmd.Flags().Changed("host")
 		host, hostErr := getHost(hostChanged)
@@ -128,10 +117,10 @@ var AddCommand = &cobra.Command{
 		if !portChanged {
 			fmt.Printf("Using default port: %v\n", DefaultPort)
 		}
-		//confirm := false
-		//if Host != "" || Port != "" {
+		// confirm := false
+		// if Host != "" || Port != "" {
 		//	confirm = true
-		//} else {
+		// } else {
 		//	err := huh.NewConfirm().
 		//		Title("Is the above correct?").
 		//		Affirmative("Yes!").
@@ -141,8 +130,8 @@ var AddCommand = &cobra.Command{
 		//		fmt.Printf("unable to get confirmation: %v\n", err)
 		//		os.Exit(1)
 		//	}
-		//}
-		//if confirm {
+		// }
+		// if confirm {
 		var servers = viper.GetStringMap("servers")
 		if servers == nil {
 			servers = make(map[string]interface{})
@@ -230,7 +219,7 @@ func init() {
 	AddCommand.Flags().StringVarP(&Port, "port", "p", "", "Chroma server port")
 	AddCommand.Flags().BoolVarP(&Overwrite, "overwrite", "o", false, "Overwrite existing server with the same alias")
 	AddCommand.Flags().BoolVarP(&Secure, "secure", "s", false, "Use secure connection (https).")
-	//AddCommand.MarkFlagsRequiredTogether("host", "port")
+	// AddCommand.MarkFlagsRequiredTogether("host", "port")
 	AddCommand.ValidArgs = []string{"alias"}
 	RmCommand.ValidArgs = []string{"alias"}
 	RmCommand.Flags().BoolVarP(&ForceDelete, "force", "f", false, "Force remove server without confirmation")
