@@ -53,7 +53,6 @@ jobs:
           GPG_KEY_PATH: ${{ runner.temp }}/gpg.key
           NFPM_DEFAULT_PASSPHRASE: ${{ secrets.AMIKOS_OSS_GPG_SECRET_KEY_PASSWORD }}
       - uses: actions/upload-artifact@v4
-        if: ${{ inputs.upload_artifact == true && always() }}
         with:
           retention-days: 30
           name: dist
