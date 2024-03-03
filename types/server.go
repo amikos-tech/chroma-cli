@@ -1,6 +1,6 @@
 package types
 
-//connect to local Chroma
+// connect to local Chroma
 
 type ServerConfig struct {
 	Host string
