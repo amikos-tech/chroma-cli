@@ -25,3 +25,31 @@ Flags:
 ```bash
 chroma server add <server-alias> -h <host> -p <port> -o -s -t <tenant> -d <database>
 ```
+
+### Switch Server
+
+Arguments:
+
+- `server-alias` - Alias for the server
+
+Flags:
+
+- `-t` or `--tenant` - Changes the default tenant
+- `-d` or `--database` - Changes the default database
+- `-r` or `--defaults` - Uses the default tenant and database (this is mutually exclusive with `-t` and `-d` flags)
+
+```bash
+chroma switch <server-alias>
+```
+
+With shorthands:
+
+```bash
+chroma sw <server-alias> -t <tenant> -d <database>
+```
+
+With defaults:
+
+```bash
+chroma sw <server-alias> -r
+```

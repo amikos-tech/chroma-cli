@@ -108,16 +108,46 @@ func setActiveServer(alias string) error {
 		servers = make(map[string]interface{})
 	}
 	if _, ok := servers[alias]; ok {
-		viper.Set("active", alias)
+		viper.Set("active_server", alias)
 		err := viper.WriteConfig()
 		if err != nil {
 			return fmt.Errorf("unable to write to config file: %v", err)
 		}
-		fmt.Printf("Server '%v' set as active!\n", alias)
 	} else {
 		return fmt.Errorf("server with alias %v does not exist", alias)
 	}
 	return nil
+}
+
+// setActiveDatabase sets the active database to the one with the given name
+func setActiveDatabase(database string) error {
+	viper.Set("active_db", database)
+	err := viper.WriteConfig()
+	if err != nil {
+		return fmt.Errorf("unable to write to config file: %v", err)
+	}
+	return nil
+}
+
+// setActiveTenant sets the active tenant to the one with the given name
+func setActiveTenant(tenant string) error {
+	viper.Set("active_tenant", tenant)
+	err := viper.WriteConfig()
+	if err != nil {
+		return fmt.Errorf("unable to write to config file: %v", err)
+	}
+	return nil
+}
+
+func getServer(alias string) (map[string]interface{}, error) {
+	var servers = viper.GetStringMap("servers")
+	if servers == nil {
+		servers = make(map[string]interface{})
+	}
+	if server, ok := servers[alias]; ok {
+		return server.(map[string]interface{}), nil
+	}
+	return nil, fmt.Errorf("server with alias %v does not exist", alias)
 }
 
 var Host string
@@ -272,6 +302,8 @@ var ListCommand = &cobra.Command{
 	},
 }
 
+var DBAndTenantDefaults bool
+
 var SwitchCommand = &cobra.Command{
 	Use:     "switch",
 	Aliases: []string{"sw"},
@@ -284,6 +316,57 @@ var SwitchCommand = &cobra.Command{
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
+		if cmd.Flags().Changed("tenant") {
+			err := setActiveTenant(Tenant)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf("Tenant '%v' set as active!\n", Tenant)
+		} else if cmd.Flags().Changed("defaults") {
+			getSrv, err := getServer(alias)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+				os.Exit(1)
+			}
+			if getSrv["tenant"] == nil {
+				getSrv["tenant"] = DefaultTenant
+			}
+			if _, ok := getSrv["tenant"]; ok {
+				err := setActiveTenant(getSrv["tenant"].(string))
+				if err != nil {
+					fmt.Printf("%v\n", err)
+					os.Exit(1)
+				}
+				fmt.Printf("Tenant '%v' set as active!\n", getSrv["tenant"])
+			}
+		}
+		if cmd.Flags().Changed("database") {
+			err := setActiveDatabase(Database)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf("Database '%v' set as active!\n", Database)
+		} else if cmd.Flags().Changed("defaults") {
+			getSrv, err := getServer(alias)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+				os.Exit(1)
+			}
+			if getSrv["database"] == nil {
+				getSrv["database"] = DefaultDatabase
+			}
+			if _, ok := getSrv["database"]; ok {
+				err := setActiveDatabase(getSrv["database"].(string))
+				if err != nil {
+					fmt.Printf("%v\n", err)
+					os.Exit(1)
+				}
+			}
+			fmt.Printf("Database '%v' set as active!\n", getSrv["database"])
+		}
+		fmt.Printf("Server '%v' set as active!\n", alias)
 	},
 }
 
@@ -298,4 +381,9 @@ func init() {
 	AddCommand.ValidArgs = []string{"alias"}
 	RmCommand.ValidArgs = []string{"alias"}
 	RmCommand.Flags().BoolVarP(&ForceDelete, "force", "f", false, "Force remove server without confirmation")
+	SwitchCommand.Flags().StringVarP(&Tenant, "tenant", "t", "", "Default tenant for the server")
+	SwitchCommand.Flags().StringVarP(&Database, "database", "d", "", "Default database for the server")
+	SwitchCommand.Flags().BoolVarP(&DBAndTenantDefaults, "defaults", "r", false, "Reset active tenant and database to defaults")
+	SwitchCommand.MarkFlagsMutuallyExclusive("tenant", "defaults")
+	SwitchCommand.MarkFlagsMutuallyExclusive("database", "defaults")
 }
