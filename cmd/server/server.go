@@ -12,8 +12,10 @@ import (
 )
 
 const (
-	DefaultHost = "localhost"
-	DefaultPort = "8000"
+	DefaultHost     = "localhost"
+	DefaultPort     = "8000"
+	DefaultTenant   = "default_tenant"
+	DefaultDatabase = "default_database"
 )
 
 func validateHost(host string) error {
@@ -83,11 +85,28 @@ func getHost(changed bool) (string, error) {
 	return host, nil
 }
 
+func getTenant(changed bool) (string, error) {
+	if !changed {
+		return DefaultTenant, nil
+	}
+	// TODO validate tenant name
+	return Tenant, nil
+}
+
+func getDatabase(changed bool) (string, error) {
+	if !changed {
+		return DefaultDatabase, nil
+	}
+	// TODO validate database name
+	return Database, nil
+}
+
 var Host string
 var Port string
 var Overwrite bool
 var Secure bool
-
+var Tenant string
+var Database string
 var AddCommand = &cobra.Command{
 	Use:   "add",
 	Short: "Add new or Update existing Chroma server",
@@ -117,6 +136,16 @@ var AddCommand = &cobra.Command{
 		if !portChanged {
 			fmt.Printf("Using default port: %v\n", DefaultPort)
 		}
+		var tenant, tenantErr = getTenant(cmd.Flags().Changed("tenant"))
+		if tenantErr != nil {
+			fmt.Printf("%v\n", tenantErr)
+			os.Exit(1)
+		}
+		var database, databaseErr = getDatabase(cmd.Flags().Changed("database"))
+		if databaseErr != nil {
+			fmt.Printf("%v\n", databaseErr)
+			os.Exit(1)
+		}
 		// confirm := false
 		// if Host != "" || Port != "" {
 		//	confirm = true
@@ -142,7 +171,13 @@ var AddCommand = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-		servers[alias] = map[string]interface{}{"host": host, "port": actualPort, "secure": Secure}
+		servers[alias] = map[string]interface{}{
+			"host":     host,
+			"port":     actualPort,
+			"secure":   Secure,
+			"tenant":   tenant,
+			"database": database,
+		}
 		viper.Set("servers", servers)
 		err := viper.WriteConfig()
 		if err != nil {
@@ -219,6 +254,8 @@ func init() {
 	AddCommand.Flags().StringVarP(&Port, "port", "p", "", "Chroma server port")
 	AddCommand.Flags().BoolVarP(&Overwrite, "overwrite", "o", false, "Overwrite existing server with the same alias")
 	AddCommand.Flags().BoolVarP(&Secure, "secure", "s", false, "Use secure connection (https).")
+	AddCommand.Flags().StringVarP(&Tenant, "tenant", "t", DefaultTenant, "Default tenant for the server")
+	AddCommand.Flags().StringVarP(&Database, "database", "d", DefaultDatabase, "Default database for the server")
 	// AddCommand.MarkFlagsRequiredTogether("host", "port")
 	AddCommand.ValidArgs = []string{"alias"}
 	RmCommand.ValidArgs = []string{"alias"}
