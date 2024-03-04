@@ -101,6 +101,25 @@ func getDatabase(changed bool) (string, error) {
 	return Database, nil
 }
 
+// setActiveServer sets the active server to the one with the given alias
+func setActiveServer(alias string) error {
+	var servers = viper.GetStringMap("servers")
+	if servers == nil {
+		servers = make(map[string]interface{})
+	}
+	if _, ok := servers[alias]; ok {
+		viper.Set("active", alias)
+		err := viper.WriteConfig()
+		if err != nil {
+			return fmt.Errorf("unable to write to config file: %v", err)
+		}
+		fmt.Printf("Server '%v' set as active!\n", alias)
+	} else {
+		return fmt.Errorf("server with alias %v does not exist", alias)
+	}
+	return nil
+}
+
 var Host string
 var Port string
 var Overwrite bool
@@ -219,6 +238,10 @@ var RmCommand = &cobra.Command{
 				os.Exit(0)
 			}
 			delete(servers, alias)
+			if viper.GetString("active") == alias {
+				viper.Set("active", "")
+				fmt.Println(alias, "was the active server. You will need to set a new active server.")
+			}
 			viper.Set("servers", servers)
 			err := viper.WriteConfig()
 			if err != nil {
@@ -245,6 +268,21 @@ var ListCommand = &cobra.Command{
 		fmt.Printf("Available servers: \n")
 		for alias, server := range servers {
 			fmt.Printf("%v: %v\n", alias, server)
+		}
+	},
+}
+
+var SwitchCommand = &cobra.Command{
+	Use:     "switch",
+	Aliases: []string{"sw"},
+	Short:   "Set active server",
+	Args:    cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		alias := args[0]
+		err := setActiveServer(alias)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
 		}
 	},
 }
