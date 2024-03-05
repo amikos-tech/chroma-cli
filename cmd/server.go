@@ -7,9 +7,10 @@ import (
 
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
-	Use:   "server",
-	Short: "Manage Chroma servers",
-	Long:  ``,
+	Use:     "server",
+	Aliases: []string{"s"},
+	Short:   "Manage Chroma servers",
+	Long:    ``,
 }
 
 func init() {
@@ -17,4 +18,5 @@ func init() {
 	serverCmd.AddCommand(server.AddCommand)
 	serverCmd.AddCommand(server.ListCommand)
 	serverCmd.AddCommand(server.RmCommand)
+	rootCmd.AddCommand(server.SwitchCommand)
 }
