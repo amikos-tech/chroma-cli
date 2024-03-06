@@ -17,3 +17,36 @@ This is an experiment in building CLI experiences for ChromaDB developers.
 - 🚫 List Documents - `chroma docs ls <collection-name>` (using bubblegum interactive tables)
 
 Interactive mode - a mode where you can interact with the server using GUI based interface.
+
+
+Example config file:
+
+```yaml
+active_db: default_database
+active_server: test1
+active_tenant: default_tenant
+servers:
+    local:
+        host: localhost
+        port: "8000"
+    myserver:
+        database: mydb
+        host: 10.10.10.1
+        port: 9011
+        secure: false
+        tenant: my_tenant
+    test1:
+        database: default_database
+        host: localhost
+        port: 8000
+        secure: false
+        tenant: default_tenant
+```
+
+### Usage
+
+```bash
+make build # or go build/ go install
+./chroma server add test1 -h localhost -p 8000 -o
+```
+

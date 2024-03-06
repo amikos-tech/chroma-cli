@@ -1,6 +1,7 @@
 package server
 
 import (
+	"chroma/utils"
 	"fmt"
 	"os"
 	"strconv"
@@ -99,55 +100,6 @@ func getDatabase(changed bool) (string, error) {
 	}
 	// TODO validate database name
 	return Database, nil
-}
-
-// setActiveServer sets the active server to the one with the given alias
-func setActiveServer(alias string) error {
-	var servers = viper.GetStringMap("servers")
-	if servers == nil {
-		servers = make(map[string]interface{})
-	}
-	if _, ok := servers[alias]; ok {
-		viper.Set("active_server", alias)
-		err := viper.WriteConfig()
-		if err != nil {
-			return fmt.Errorf("unable to write to config file: %v", err)
-		}
-	} else {
-		return fmt.Errorf("server with alias %v does not exist", alias)
-	}
-	return nil
-}
-
-// setActiveDatabase sets the active database to the one with the given name
-func setActiveDatabase(database string) error {
-	viper.Set("active_db", database)
-	err := viper.WriteConfig()
-	if err != nil {
-		return fmt.Errorf("unable to write to config file: %v", err)
-	}
-	return nil
-}
-
-// setActiveTenant sets the active tenant to the one with the given name
-func setActiveTenant(tenant string) error {
-	viper.Set("active_tenant", tenant)
-	err := viper.WriteConfig()
-	if err != nil {
-		return fmt.Errorf("unable to write to config file: %v", err)
-	}
-	return nil
-}
-
-func getServer(alias string) (map[string]interface{}, error) {
-	var servers = viper.GetStringMap("servers")
-	if servers == nil {
-		servers = make(map[string]interface{})
-	}
-	if server, ok := servers[alias]; ok {
-		return server.(map[string]interface{}), nil
-	}
-	return nil, fmt.Errorf("server with alias %v does not exist", alias)
 }
 
 var Host string
@@ -311,20 +263,20 @@ var SwitchCommand = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		alias := args[0]
-		err := setActiveServer(alias)
+		err := utils.SetActiveServer(alias)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		if cmd.Flags().Changed("tenant") {
-			err := setActiveTenant(Tenant)
+			err := utils.SetActiveTenant(Tenant)
 			if err != nil {
 				fmt.Printf("%v\n", err)
 				os.Exit(1)
 			}
 			fmt.Printf("Tenant '%v' set as active!\n", Tenant)
 		} else if cmd.Flags().Changed("defaults") {
-			getSrv, err := getServer(alias)
+			getSrv, err := utils.GetServer(alias)
 			if err != nil {
 				fmt.Printf("%v\n", err)
 				os.Exit(1)
@@ -333,7 +285,7 @@ var SwitchCommand = &cobra.Command{
 				getSrv["tenant"] = DefaultTenant
 			}
 			if _, ok := getSrv["tenant"]; ok {
-				err := setActiveTenant(getSrv["tenant"].(string))
+				err := utils.SetActiveTenant(getSrv["tenant"].(string))
 				if err != nil {
 					fmt.Printf("%v\n", err)
 					os.Exit(1)
@@ -342,14 +294,14 @@ var SwitchCommand = &cobra.Command{
 			}
 		}
 		if cmd.Flags().Changed("database") {
-			err := setActiveDatabase(Database)
+			err := utils.SetActiveDatabase(Database)
 			if err != nil {
 				fmt.Printf("%v\n", err)
 				os.Exit(1)
 			}
 			fmt.Printf("Database '%v' set as active!\n", Database)
 		} else if cmd.Flags().Changed("defaults") {
-			getSrv, err := getServer(alias)
+			getSrv, err := utils.GetServer(alias)
 			if err != nil {
 				fmt.Printf("%v\n", err)
 				os.Exit(1)
@@ -358,7 +310,7 @@ var SwitchCommand = &cobra.Command{
 				getSrv["database"] = DefaultDatabase
 			}
 			if _, ok := getSrv["database"]; ok {
-				err := setActiveDatabase(getSrv["database"].(string))
+				err := utils.SetActiveDatabase(getSrv["database"].(string))
 				if err != nil {
 					fmt.Printf("%v\n", err)
 					os.Exit(1)

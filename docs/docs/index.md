@@ -53,3 +53,17 @@ With defaults:
 ```bash
 chroma sw <server-alias> -r
 ```
+
+### List Collections
+
+List collection will use the currently active server, tenant and database.
+
+```bash
+chroma ls
+```
+
+or 
+
+```bash
+chroma c ls # c is an alias for `collection`
+```
