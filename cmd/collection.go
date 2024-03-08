@@ -2,43 +2,15 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
-	"chroma/utils"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
-	"github.com/amikos-tech/chroma-go"
 	"github.com/amikos-tech/chroma-go/collection"
 	"github.com/amikos-tech/chroma-go/types"
 )
-
-func getClient(serverAlias string) (*chroma.Client, error) {
-	var serverConfig map[string]interface{}
-	var err error
-	if serverAlias == "" {
-		serverConfig, err = utils.GetServer(viper.GetString("active_server"))
-	} else {
-		serverConfig, err = utils.GetServer(serverAlias)
-	}
-	if err != nil {
-		return nil, err
-	}
-	var scheme string
-	if serverConfig["secure"].(bool) {
-		scheme = "https"
-	} else {
-		scheme = "http"
-	}
-	client, err := chroma.NewClient(fmt.Sprintf("%v://%v:%v", scheme, serverConfig["host"], serverConfig["port"]), chroma.WithDebug(true))
-	if err != nil {
-		return nil, err
-	}
-	return client, nil
-}
 
 var ListCollectionsCommand = &cobra.Command{
 	Use:     "list",
@@ -47,16 +19,16 @@ var ListCollectionsCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client, err := getClient("")
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			cmd.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		col, err := client.ListCollections(context.TODO())
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			cmd.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		for _, collection := range col {
-			fmt.Printf("%v\n", collection)
+			cmd.Printf("%v\n", collection)
 		}
 	},
 }
@@ -82,13 +54,12 @@ var CreateCollectionCommand = &cobra.Command{
 		collectionName := args[0]
 		client, err := getClient(alias)
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			cmd.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		var options = make([]collection.Option, 0)
 		options = append(options, collection.WithName(collectionName))
 		if cmd.Flag("space").Changed {
-
 			options = append(options, collection.WithHNSWDistanceFunction(types.DistanceFunction(space)))
 		}
 		if cmd.Flag("m").Changed {
@@ -120,11 +91,11 @@ var CreateCollectionCommand = &cobra.Command{
 			for _, meta := range metadatas {
 				kvPair := strings.Split(meta, "=")
 				if len(kvPair) != 2 {
-					fmt.Printf("invalid metadata format: %v. should be key=value.", meta)
+					cmd.Printf("invalid metadata format: %v. should be key=value.", meta)
 					os.Exit(1)
 				}
 				if b, err := strconv.ParseBool(kvPair[1]); err == nil {
-					fmt.Printf("bool: %v\n", b)
+					cmd.Printf("bool: %v\n", b)
 					metadata[kvPair[0]] = b
 				} else if f, err := strconv.ParseFloat(kvPair[1], 32); strings.Contains(kvPair[1], ".") && err == nil {
 					metadata[kvPair[0]] = float32(f)
@@ -137,16 +108,15 @@ var CreateCollectionCommand = &cobra.Command{
 			options = append(options, collection.WithMetadatas(metadata))
 		}
 
-		newCollection, err := client.NewCollection(
+		_, err = client.NewCollection(
 			context.Background(),
 			options...,
 		)
 		if err != nil {
-			fmt.Printf("failed to create collection: %v\n", err)
+			cmd.Printf("failed to create collection: %v\n", err)
 			os.Exit(1)
 		}
 		cmd.Printf("Collection created: %v\n", collectionName)
-		fmt.Printf("%v\n", newCollection)
 	},
 }
 

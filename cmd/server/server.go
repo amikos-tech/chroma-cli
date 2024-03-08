@@ -118,33 +118,33 @@ var AddCommand = &cobra.Command{
 		hostChanged := cmd.Flags().Changed("host")
 		host, hostErr := getHost(hostChanged)
 		if hostErr != nil {
-			fmt.Printf("%v\n", hostErr)
+			cmd.Printf("%v\n", hostErr)
 			os.Exit(1)
 		}
 		portChanged := cmd.Flags().Changed("port")
 		var actualPort, portErr = getPort(portChanged)
 		if portErr != nil {
-			fmt.Printf("%v\n", portErr)
+			cmd.Printf("%v\n", portErr)
 			os.Exit(1)
 		}
 		if !hostChanged && !portChanged {
-			fmt.Printf("You must specify either host or port\n")
+			cmd.Printf("You must specify either host or port\n")
 			os.Exit(1)
 		}
 		if !hostChanged {
-			fmt.Printf("Using default host: %v\n", DefaultHost)
+			cmd.Printf("Using default host: %v\n", DefaultHost)
 		}
 		if !portChanged {
-			fmt.Printf("Using default port: %v\n", DefaultPort)
+			cmd.Printf("Using default port: %v\n", DefaultPort)
 		}
 		var tenant, tenantErr = getTenant(cmd.Flags().Changed("tenant"))
 		if tenantErr != nil {
-			fmt.Printf("%v\n", tenantErr)
+			cmd.Printf("%v\n", tenantErr)
 			os.Exit(1)
 		}
 		var database, databaseErr = getDatabase(cmd.Flags().Changed("database"))
 		if databaseErr != nil {
-			fmt.Printf("%v\n", databaseErr)
+			cmd.Printf("%v\n", databaseErr)
 			os.Exit(1)
 		}
 		// confirm := false
@@ -157,7 +157,7 @@ var AddCommand = &cobra.Command{
 		//		Negative("No.").
 		//		Value(&confirm).Run()
 		//	if err != nil {
-		//		fmt.Printf("unable to get confirmation: %v\n", err)
+		//		cmd.Printf("unable to get confirmation: %v\n", err)
 		//		os.Exit(1)
 		//	}
 		// }
@@ -168,7 +168,7 @@ var AddCommand = &cobra.Command{
 		}
 		if !Overwrite {
 			if _, ok := servers[alias]; ok {
-				fmt.Printf("Server with alias %v already exists! \n", alias)
+				cmd.Printf("Server with alias %v already exists! \n", alias)
 				os.Exit(1)
 			}
 		}
@@ -182,10 +182,10 @@ var AddCommand = &cobra.Command{
 		viper.Set("servers", servers)
 		err := viper.WriteConfig()
 		if err != nil {
-			fmt.Printf("unable to write to config file: %v\n", err)
+			cmd.Printf("unable to write to config file: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Server '%v:%v' (secure=%v) successfully added!\n", host, actualPort, Secure)
+		cmd.Printf("Server '%v:%v' (secure=%v) successfully added!\n", host, actualPort, Secure)
 		//}
 	},
 }
@@ -211,28 +211,28 @@ var RmCommand = &cobra.Command{
 					Negative("No.").
 					Value(&confirm).Run()
 				if err != nil {
-					fmt.Printf("unable to get confirmation: %v\n", err)
+					cmd.Printf("unable to get confirmation: %v\n", err)
 					os.Exit(1)
 				}
 			}
 			if !confirm {
-				fmt.Printf("Operation aborted!\n")
+				cmd.Printf("Operation aborted!\n")
 				os.Exit(0)
 			}
 			delete(servers, alias)
 			if viper.GetString("active") == alias {
 				viper.Set("active", "")
-				fmt.Println(alias, "was the active server. You will need to set a new active server.")
+				cmd.Println(alias, "was the active server. You will need to set a new active server.")
 			}
 			viper.Set("servers", servers)
 			err := viper.WriteConfig()
 			if err != nil {
-				fmt.Printf("unable to write to config file: %v\n", err)
+				cmd.Printf("unable to write to config file: %v\n", err)
 				os.Exit(1)
 			}
-			fmt.Printf("Server '%v' successfully removed!\n", alias)
+			cmd.Printf("Server '%v' successfully removed!\n", alias)
 		} else {
-			fmt.Printf("Server with alias %v does not exist! \n", alias)
+			cmd.Printf("Server with alias %v does not exist! \n", alias)
 			os.Exit(1)
 		}
 	},
@@ -247,9 +247,9 @@ var ListCommand = &cobra.Command{
 		if servers == nil {
 			servers = make(map[string]interface{})
 		}
-		fmt.Printf("Available servers: \n")
+		cmd.Printf("Available servers: \n")
 		for alias, server := range servers {
-			fmt.Printf("%v: %v\n", alias, server)
+			cmd.Printf("%v: %v\n", alias, server)
 		}
 	},
 }
@@ -265,20 +265,20 @@ var SwitchCommand = &cobra.Command{
 		alias := args[0]
 		err := utils.SetActiveServer(alias)
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			cmd.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		if cmd.Flags().Changed("tenant") {
 			err := utils.SetActiveTenant(Tenant)
 			if err != nil {
-				fmt.Printf("%v\n", err)
+				cmd.Printf("%v\n", err)
 				os.Exit(1)
 			}
-			fmt.Printf("Tenant '%v' set as active!\n", Tenant)
+			cmd.Printf("Tenant '%v' set as active!\n", Tenant)
 		} else if cmd.Flags().Changed("defaults") {
 			getSrv, err := utils.GetServer(alias)
 			if err != nil {
-				fmt.Printf("%v\n", err)
+				cmd.Printf("%v\n", err)
 				os.Exit(1)
 			}
 			if getSrv["tenant"] == nil {
@@ -287,23 +287,23 @@ var SwitchCommand = &cobra.Command{
 			if _, ok := getSrv["tenant"]; ok {
 				err := utils.SetActiveTenant(getSrv["tenant"].(string))
 				if err != nil {
-					fmt.Printf("%v\n", err)
+					cmd.Printf("%v\n", err)
 					os.Exit(1)
 				}
-				fmt.Printf("Tenant '%v' set as active!\n", getSrv["tenant"])
+				cmd.Printf("Tenant '%v' set as active!\n", getSrv["tenant"])
 			}
 		}
 		if cmd.Flags().Changed("database") {
 			err := utils.SetActiveDatabase(Database)
 			if err != nil {
-				fmt.Printf("%v\n", err)
+				cmd.Printf("%v\n", err)
 				os.Exit(1)
 			}
-			fmt.Printf("Database '%v' set as active!\n", Database)
+			cmd.Printf("Database '%v' set as active!\n", Database)
 		} else if cmd.Flags().Changed("defaults") {
 			getSrv, err := utils.GetServer(alias)
 			if err != nil {
-				fmt.Printf("%v\n", err)
+				cmd.Printf("%v\n", err)
 				os.Exit(1)
 			}
 			if getSrv["database"] == nil {
@@ -312,13 +312,13 @@ var SwitchCommand = &cobra.Command{
 			if _, ok := getSrv["database"]; ok {
 				err := utils.SetActiveDatabase(getSrv["database"].(string))
 				if err != nil {
-					fmt.Printf("%v\n", err)
+					cmd.Printf("%v\n", err)
 					os.Exit(1)
 				}
 			}
-			fmt.Printf("Database '%v' set as active!\n", getSrv["database"])
+			cmd.Printf("Database '%v' set as active!\n", getSrv["database"])
 		}
-		fmt.Printf("Server '%v' set as active!\n", alias)
+		cmd.Printf("Server '%v' set as active!\n", alias)
 	},
 }
 
