@@ -1,14 +1,15 @@
 package cmd
 
 import (
-	"chroma/utils"
 	"fmt"
+	"os"
+	"strconv"
+
+	"chroma/utils"
 	"github.com/charmbracelet/huh"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"strconv"
 )
 
 const (
@@ -350,5 +351,4 @@ func init() {
 	serverCmd.AddCommand(ListCommand)
 	serverCmd.AddCommand(RmCommand)
 	rootCmd.AddCommand(SwitchCommand)
-
 }
