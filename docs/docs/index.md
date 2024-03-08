@@ -72,7 +72,7 @@ or shorthand:
 chroma ls
 ```
 
-or 
+or
 
 ```bash
 chroma c ls # c is an alias for `collection`
@@ -93,6 +93,7 @@ chroma create <collection-name> \
   -r/--resize-factor <hnsw:resize_factor> \
   -e/--ensure <create_if_not_exist>
 ```
+
 ### Delete Collection
 
 ```bash
@@ -100,6 +101,10 @@ chroma delete/rm <collection-name>
 ```
 
 ### Create Tenant
+
+!!! note "Server Alias"
+
+    Use `-a` or `--alias` flag to specify a server alias for the tenant.
 
 ```bash
 chroma tenant create <tenant-name>
@@ -111,7 +116,32 @@ or shorthand:
 chroma c t <tenant-name>
 ```
 
-### Version 
+### Create Database
+
+!!! note "Server Alias"
+
+    Use `-a` or `--alias` flag to specify a server alias for the database.
+
+By default, if no tenant is specified the database is created in the default tenant (`default_tenant`). To specify a
+tenant use `-t` or `--tenant` flag.
+
+```bash
+chroma database create <database-name>
+```
+
+or shorthand:
+
+```bash
+chroma c d <database-name>
+```
+
+Create database in a specific tenant:
+
+```bash
+chroma c d <database-name> -t <tenant-name>
+```
+
+### Version
 
 App version `chroma --version`
 
