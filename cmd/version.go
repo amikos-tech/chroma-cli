@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -13,14 +12,14 @@ var VersionCommand = &cobra.Command{
 	Aliases: []string{"v"},
 	Short:   "Get the version of the Chroma Server",
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := getClient("")
+		client, err := getClient(alias)
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			cmd.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		version, err := client.Version(context.TODO())
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			cmd.Printf("%v\n", err)
 			os.Exit(1)
 		}
 		cmd.Printf("Chroma Server Version: %v\n", version)
@@ -28,6 +27,6 @@ var VersionCommand = &cobra.Command{
 }
 
 func init() {
-	VersionCommand.PersistentFlags().StringP("alias", "s", "", "Server alias")
+	VersionCommand.Flags().StringVarP(&alias, "alias", "s", "", "Server alias")
 	rootCmd.AddCommand(VersionCommand)
 }
