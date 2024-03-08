@@ -1,11 +1,11 @@
 package server
 
 import (
-	"chroma/utils"
 	"fmt"
 	"os"
 	"strconv"
 
+	"chroma/utils"
 	"github.com/charmbracelet/huh"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"

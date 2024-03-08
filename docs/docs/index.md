@@ -67,3 +67,20 @@ or
 ```bash
 chroma c ls # c is an alias for `collection`
 ```
+
+### Create Collection
+
+```bash
+chroma create <collection-name> \
+  -s <alias> \
+  -p/--space <distance_functiom> \
+  -m/--m <hnsw:M> \
+  -u/--construction-ef <hnsw:efConstruction> \
+  -f/--search-ef <hnsw:search_ef> \
+  -b/--batch-size <hnsw:batch_size> \
+  -k/--sync-threshold <hnsw:sync_threshold> \
+  -n/--threads <hnsw:threads> \
+  -r/--resize-factor <hnsw:resize_factor> \
+  -e/--ensure <create_if_not_exist>
+```
+
