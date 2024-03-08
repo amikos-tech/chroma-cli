@@ -13,14 +13,16 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "chroma",
-	Short: "Chroma",
-	Long:  ``,
+	Use:     "chroma",
+	Short:   "Chroma",
+	Long:    ``,
+	Version: "0.0.1",
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(version string, buildDate string) {
+	rootCmd.SetVersionTemplate(fmt.Sprintf("Chroma version %s, build date %s\n", version, buildDate))
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
