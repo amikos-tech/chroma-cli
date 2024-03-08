@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"testing"
 
-	"chroma/cmd/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -64,7 +63,7 @@ func TestCreateTenant(t *testing.T) {
 func TestCreateDatabase(t *testing.T) {
 	command := rootCmd
 	t.Run("Create db default-tenant long", func(t *testing.T) {
-		err := CreateDatabaseCommand.Flag("tenant").Value.Set(server.DefaultTenant)
+		err := CreateDatabaseCommand.Flag("tenant").Value.Set(DefaultTenant)
 		require.NoError(t, err)
 		client := setup()
 		defer tearDown(client)
@@ -78,11 +77,11 @@ func TestCreateDatabase(t *testing.T) {
 		require.NoError(t, err)
 		output := buf.String()
 		require.Contains(t, output, dbName)
-		require.Contains(t, output, server.DefaultTenant)
+		require.Contains(t, output, DefaultTenant)
 	})
 
 	t.Run("Create db custom-tenant long", func(t *testing.T) {
-		err := CreateDatabaseCommand.Flag("tenant").Value.Set(server.DefaultTenant)
+		err := CreateDatabaseCommand.Flag("tenant").Value.Set(DefaultTenant)
 		require.NoError(t, err)
 		client := setup()
 		defer tearDown(client)
@@ -101,7 +100,7 @@ func TestCreateDatabase(t *testing.T) {
 	})
 
 	t.Run("Create db default-tenant short", func(t *testing.T) {
-		err := CreateDatabaseCommand.Flag("tenant").Value.Set(server.DefaultTenant)
+		err := CreateDatabaseCommand.Flag("tenant").Value.Set(DefaultTenant)
 		require.NoError(t, err)
 		client := setup()
 		defer tearDown(client)
@@ -114,11 +113,11 @@ func TestCreateDatabase(t *testing.T) {
 		require.NoError(t, err)
 		output := buf.String()
 		require.Contains(t, output, dbName)
-		require.Contains(t, output, server.DefaultTenant)
+		require.Contains(t, output, DefaultTenant)
 	})
 
 	t.Run("Create db custom-tenant short", func(t *testing.T) {
-		err := CreateDatabaseCommand.Flag("tenant").Value.Set(server.DefaultTenant)
+		err := CreateDatabaseCommand.Flag("tenant").Value.Set(DefaultTenant)
 		require.NoError(t, err)
 		client := setup()
 		defer tearDown(client)

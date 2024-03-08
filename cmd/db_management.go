@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"chroma/cmd/server"
 	"github.com/spf13/cobra"
 )
 
@@ -69,7 +68,7 @@ func init() {
 	CreateTenantCommand.Flags().StringVarP(&alias, "alias", "s", "", "Server alias")
 	CreateTenantCommand.ValidArgs = []string{"tenant"}
 	CreateDatabaseCommand.Flags().StringVarP(&alias, "alias", "s", "", "Server alias")
-	CreateDatabaseCommand.Flags().StringVarP(&tenant, "tenant", "t", server.DefaultTenant, "Tenant name")
+	CreateDatabaseCommand.Flags().StringVarP(&tenant, "tenant", "t", DefaultTenant, "Tenant name")
 	CreateDatabaseCommand.ValidArgs = []string{"db"}
 	TenantCommand.AddCommand(CreateTenantCommand)
 	DBCommand.AddCommand(CreateDatabaseCommand)
