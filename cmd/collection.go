@@ -17,7 +17,7 @@ var ListCollectionsCommand = &cobra.Command{
 	Aliases: []string{"ls"},
 	Short:   "List all available collections",
 	Run: func(cmd *cobra.Command, args []string) {
-		client, err := getClient("")
+		client, err := getClient(alias)
 		if err != nil {
 			cmd.Printf("%v\n", err)
 			os.Exit(1)
@@ -120,6 +120,27 @@ var CreateCollectionCommand = &cobra.Command{
 	},
 }
 
+var DeleteCollectionCommand = &cobra.Command{
+	Use:     "delete",
+	Aliases: []string{"rm"},
+	Short:   "Delete a collection",
+	Args:    cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		collectionName := args[0]
+		client, err := getClient(alias)
+		if err != nil {
+			cmd.Printf("%v\n", err)
+			os.Exit(1)
+		}
+		_, err = client.DeleteCollection(context.TODO(), collectionName)
+		if err != nil {
+			cmd.Printf("%v\n", err)
+			os.Exit(1)
+		}
+		cmd.Printf("Collection deleted: %v\n", collectionName)
+	},
+}
+
 var collectionCommand = &cobra.Command{
 	Use:     "collection",
 	Aliases: []string{"c"},
@@ -146,4 +167,8 @@ func init() {
 	CreateCollectionCommand.Flags().StringSliceVarP(&metadatas, "meta", "a", []string{}, "Server alias name. If not provided, the active server will be used.")
 	collectionCommand.AddCommand(CreateCollectionCommand)
 	rootCmd.AddCommand(CreateCollectionCommand)
+
+	DeleteCollectionCommand.Flags().StringVarP(&alias, "alias", "s", "", "Server alias name. If not provided, the active server will be used.")
+	collectionCommand.AddCommand(DeleteCollectionCommand)
+	rootCmd.AddCommand(DeleteCollectionCommand)
 }

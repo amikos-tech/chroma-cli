@@ -47,8 +47,13 @@ func assertCollectionHasMetadataAttr(t *testing.T, client *chroma.Client, collec
 	require.Equal(t, value, col.Metadata[key])
 }
 
+func helperCreateCollection(t *testing.T, client *chroma.Client, collectionName string) *chroma.Collection {
+	col, err := client.CreateCollection(context.TODO(), collectionName, nil, false, nil, types.L2)
+	require.NoError(t, err)
+	return col
+}
+
 func TestCreateCollectionCommand(t *testing.T) {
-	// Create a new command
 	command := rootCmd
 
 	t.Run("Create Collection basic", func(t *testing.T) {
@@ -60,11 +65,11 @@ func TestCreateCollectionCommand(t *testing.T) {
 		command.SetErr(buf)
 		command.SetArgs([]string{"create", collectionName})
 		_, err := command.ExecuteC()
+		require.NoError(t, err)
 		output := buf.String()
 		expectedOutput := fmt.Sprintf("Collection created: %v\n", collectionName)
 		assertCollectionExists(t, client, collectionName)
-		assert.Equal(t, expectedOutput, output)
-		assert.NoError(t, err)
+		require.Equal(t, expectedOutput, output)
 	})
 
 	t.Run("Create Collection with Distance Function (space) full flag", func(t *testing.T) {
@@ -77,12 +82,12 @@ func TestCreateCollectionCommand(t *testing.T) {
 		command.SetErr(buf)
 		command.SetArgs([]string{"create", collectionName, "--space", distanceFunction})
 		_, err := command.ExecuteC()
+		require.NoError(t, err)
 		output := buf.String()
 		expectedOutput := fmt.Sprintf("Collection created: %v\n", collectionName)
 		assertCollectionExists(t, client, collectionName)
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWSpace, distanceFunction)
-		assert.Equal(t, expectedOutput, output)
-		assert.NoError(t, err)
+		require.Equal(t, expectedOutput, output)
 	})
 
 	t.Run("Create Collection with Distance Function (space) shorthand flag", func(t *testing.T) {
@@ -95,12 +100,12 @@ func TestCreateCollectionCommand(t *testing.T) {
 		command.SetErr(buf)
 		command.SetArgs([]string{"create", collectionName, "-p", distanceFunction})
 		_, err := command.ExecuteC()
+		require.NoError(t, err)
 		output := buf.String()
 		expectedOutput := fmt.Sprintf("Collection created: %v\n", collectionName)
 		assertCollectionExists(t, client, collectionName)
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWSpace, distanceFunction)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Ensure flag long", func(t *testing.T) {
@@ -118,9 +123,9 @@ func TestCreateCollectionCommand(t *testing.T) {
 		require.Equal(t, expectedOutput, output)
 		buf.Reset()
 		_, err = c.ExecuteC() // we execute the same command again, result is idempotent
+		require.NoError(t, err)
 		assertCollectionExists(t, client, collectionName)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Ensure flag short", func(t *testing.T) {
@@ -138,9 +143,9 @@ func TestCreateCollectionCommand(t *testing.T) {
 		require.Equal(t, expectedOutput, output)
 		buf.Reset()
 		_, err = c.ExecuteC() // we execute the same command again, result is idempotent
+		require.NoError(t, err)
 		assertCollectionExists(t, client, collectionName)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with M flag long", func(t *testing.T) {
@@ -154,11 +159,10 @@ func TestCreateCollectionCommand(t *testing.T) {
 		command.SetErr(buf)
 		command.SetArgs([]string{"create", collectionName, "--m", strconv.Itoa(int(value))})
 		_, err := command.ExecuteC()
+		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWM, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with M flag short", func(t *testing.T) {
@@ -174,10 +178,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWM, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with ConstructionEF flag long", func(t *testing.T) {
@@ -193,10 +195,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWConstructionEF, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 	t.Run("Create Collection with ConstructionEF flag short", func(t *testing.T) {
 		client := setup()
@@ -211,10 +211,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWConstructionEF, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with SearchEF flag long", func(t *testing.T) {
@@ -230,10 +228,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWSearchEF, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with SearchEF flag short", func(t *testing.T) {
@@ -249,10 +245,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWSearchEF, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Batch Size flag long", func(t *testing.T) {
@@ -268,10 +262,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWBatchSize, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Batch Size flag short", func(t *testing.T) {
@@ -287,10 +279,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWBatchSize, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 	t.Run("Create Collection with Sync Threshold flag long", func(t *testing.T) {
 		client := setup()
@@ -305,10 +295,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWSyncThreshold, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Sync Threshold flag short", func(t *testing.T) {
@@ -324,10 +312,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWSyncThreshold, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Number of Threads flag long", func(t *testing.T) {
@@ -343,10 +329,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWNumThreads, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Number of Threads flag short", func(t *testing.T) {
@@ -362,10 +346,8 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWNumThreads, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Resize Factor flag long", func(t *testing.T) {
@@ -384,7 +366,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWResizeFactor, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Resize Factor flag short", func(t *testing.T) {
@@ -403,7 +384,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, types.HNSWResizeFactor, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata string long", func(t *testing.T) {
@@ -423,7 +403,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata string short", func(t *testing.T) {
@@ -443,7 +422,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata int long", func(t *testing.T) {
@@ -463,7 +441,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata int short", func(t *testing.T) {
@@ -483,7 +460,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata float long", func(t *testing.T) {
@@ -503,7 +479,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata float short", func(t *testing.T) {
@@ -522,7 +497,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 		output := buf.String()
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata boolean long", func(t *testing.T) {
@@ -541,7 +515,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 		output := buf.String()
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, true)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata boolean short", func(t *testing.T) {
@@ -562,7 +535,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 
 		assertCollectionHasMetadataAttr(t, client, collectionName, key, value)
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata multiple entries long", func(t *testing.T) {
@@ -587,12 +559,10 @@ func TestCreateCollectionCommand(t *testing.T) {
 		_, err := command.ExecuteC()
 		require.NoError(t, err)
 		output := buf.String()
-
 		for k, v := range metadata {
 			assertCollectionHasMetadataAttr(t, client, collectionName, k, v)
 		}
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
 	})
 
 	t.Run("Create Collection with Custom Metadata multiple entries short", func(t *testing.T) {
@@ -622,6 +592,77 @@ func TestCreateCollectionCommand(t *testing.T) {
 			assertCollectionHasMetadataAttr(t, client, collectionName, k, v)
 		}
 		require.Equal(t, expectedOutput, output)
-		require.NoError(t, err)
+	})
+}
+
+func TestListCollectionsCommand(t *testing.T) {
+	command := rootCmd
+
+	t.Run("List Collections long", func(t *testing.T) {
+		client := setup()
+		defer tearDown(client)
+		var collectionName = "my-new-collection"
+		helperCreateCollection(t, client, collectionName)
+		assertCollectionExists(t, client, collectionName)
+		buf := new(bytes.Buffer)
+		command.SetOut(buf)
+		command.SetErr(buf)
+		command.SetArgs([]string{"list"})
+		_, err := command.ExecuteC()
+		assert.NoError(t, err)
+		output := buf.String()
+		require.Contains(t, output, collectionName)
+	})
+
+	t.Run("List Collections short", func(t *testing.T) {
+		client := setup()
+		defer tearDown(client)
+		var collectionName = "my-new-collection"
+		helperCreateCollection(t, client, collectionName)
+		assertCollectionExists(t, client, collectionName)
+		buf := new(bytes.Buffer)
+		command.SetOut(buf)
+		command.SetErr(buf)
+		command.SetArgs([]string{"ls"})
+		_, err := command.ExecuteC()
+		assert.NoError(t, err)
+		output := buf.String()
+		require.Contains(t, output, collectionName)
+	})
+}
+
+func TestDeleteCollectionCommand(t *testing.T) {
+	command := rootCmd
+
+	t.Run("Delete Collection long", func(t *testing.T) {
+		client := setup()
+		defer tearDown(client)
+		var collectionName = "my-new-collection"
+		helperCreateCollection(t, client, collectionName)
+		assertCollectionExists(t, client, collectionName)
+		buf := new(bytes.Buffer)
+		command.SetOut(buf)
+		command.SetErr(buf)
+		command.SetArgs([]string{"delete", collectionName})
+		_, err := command.ExecuteC()
+		assert.NoError(t, err)
+		output := buf.String()
+		require.Contains(t, output, collectionName)
+	})
+
+	t.Run("Delete Collection short", func(t *testing.T) {
+		client := setup()
+		defer tearDown(client)
+		var collectionName = "my-new-collection"
+		helperCreateCollection(t, client, collectionName)
+		assertCollectionExists(t, client, collectionName)
+		buf := new(bytes.Buffer)
+		command.SetOut(buf)
+		command.SetErr(buf)
+		command.SetArgs([]string{"rm", collectionName})
+		_, err := command.ExecuteC()
+		assert.NoError(t, err)
+		output := buf.String()
+		require.Contains(t, output, collectionName)
 	})
 }
