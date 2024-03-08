@@ -58,6 +58,16 @@ chroma sw <server-alias> -r
 
 List collection will use the currently active server, tenant and database.
 
+!!! note "Server Alias"
+
+    Specify -s/--alias flag to use a different server.
+
+```bash
+chroma list
+```
+
+or shorthand:
+
 ```bash
 chroma ls
 ```
@@ -83,10 +93,25 @@ chroma create <collection-name> \
   -r/--resize-factor <hnsw:resize_factor> \
   -e/--ensure <create_if_not_exist>
 ```
+### Delete Collection
 
+```bash
+chroma delete/rm <collection-name>
+```
+
+### Create Tenant
+
+```bash
+chroma tenant create <tenant-name>
+```
+
+or shorthand:
+
+```bash
+chroma c t <tenant-name>
+```
 
 ### Version 
-
 
 App version `chroma --version`
 
