@@ -20,7 +20,7 @@ func setup() *chroma.Client {
 		panic(err)
 	}
 	// _, err = client.Reset(context.TODO())
-	//if err != nil {
+	// if err != nil {
 	//	panic(err)
 	//}
 	return client
