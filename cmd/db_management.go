@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"chroma/cmd/server"
 	"context"
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"chroma/cmd/server"
+	"github.com/spf13/cobra"
 )
 
 var CreateTenantCommand = &cobra.Command{

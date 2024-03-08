@@ -2,22 +2,20 @@ package cmd
 
 import (
 	"bytes"
-	"chroma/cmd/server"
 	"context"
-	"github.com/amikos-tech/chroma-go"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"math/rand"
 	"testing"
-	"time"
+
+	"chroma/cmd/server"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/amikos-tech/chroma-go"
 )
 
 func helperCreateTenant(t *testing.T, client *chroma.Client, tenantName string) {
 	_, err := client.CreateTenant(context.TODO(), tenantName)
 	assert.NoError(t, err)
-}
-func init() {
-	rand.Seed(time.Now().UnixNano()) // Seed based on nanoseconds
 }
 
 const charset = "abcdefghijklmnopqrstuvwxyz" +
