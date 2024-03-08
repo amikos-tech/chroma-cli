@@ -17,7 +17,7 @@ This is an experiment in building CLI experiences for ChromaDB developers.
 - 🚫 List Documents - `chroma docs ls <collection-name>` (using bubblegum interactive tables)
 - ✅ App version (via -ldflags) - `chroma --version`
 - 🚫 App help
-- 🚫 Chroma version
+- ✅ Chroma version
 
 Interactive mode - a mode where you can interact with the server using GUI based interface.
 

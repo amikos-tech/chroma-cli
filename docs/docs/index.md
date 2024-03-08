@@ -84,3 +84,10 @@ chroma create <collection-name> \
   -e/--ensure <create_if_not_exist>
 ```
 
+
+### Version 
+
+
+App version `chroma --version`
+
+Chroma server version `chroma version -s/--alias <server-alias>`
