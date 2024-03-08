@@ -33,7 +33,7 @@ var tenant string // Tenant name
 var CreateDatabaseCommand = &cobra.Command{
 	Use:     "create",
 	Aliases: []string{"c"},
-	Short:   "Create a db",
+	Short:   "Create a db for a tenant, if no tenant is specified with --tenant/-t, the default_tenant is used.",
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		dbName := args[0]
