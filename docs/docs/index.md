@@ -91,7 +91,7 @@ chroma create <collection-name> \
   -k/--sync-threshold <hnsw:sync_threshold> \
   -n/--threads <hnsw:threads> \
   -r/--resize-factor <hnsw:resize_factor> \
-  -e/--ensure <create_if_not_exist>
+  --ensure <create_if_not_exist>
 ```
 
 ### Clone Collection

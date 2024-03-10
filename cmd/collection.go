@@ -535,7 +535,7 @@ func init() {
 	ListCollectionsCommand.Flags().StringP("alias", "s", "", "Server alias name. If not provided, the active server will be used.")
 	CreateCollectionCommand.Flags().String("name", "", "Name of the collection")
 	CreateCollectionCommand.Flags().StringP("alias", "s", "", "Server alias name. If not provided, the active server will be used.")
-	CreateCollectionCommand.Flags().BoolP("ensure", "x", false, "Create collection only if it doesn't exist. Chroma will be queried before sending create, if the collection exists, exit with 0. The metadata will be overwritten.")
+	CreateCollectionCommand.Flags().Bool("ensure", false, "Create collection only if it doesn't exist. Chroma will be queried before sending create, if the collection exists, exit with 0. The metadata will be overwritten.")
 	CreateCollectionCommand.Flags().StringP("space", "p", string(types.L2), "Distance metric to use for the collection")
 	CreateCollectionCommand.Flags().IntP("m", "m", 16, "hnsw:m - The maximum number of outgoing connections (links) for a single node within the HNSW graph.")
 	CreateCollectionCommand.Flags().IntP("construction-ef", "u", 100, "hnsw:construction_ef - This parameter influences the size of the dynamic list used during the graph construction phase.")

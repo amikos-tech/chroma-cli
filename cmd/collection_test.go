@@ -183,26 +183,6 @@ func TestCreateCollectionCommand(t *testing.T) {
 		require.Equal(t, expectedOutput, output)
 	})
 
-	t.Run("Create Collection with Ensure flag short", func(t *testing.T) {
-		client := setup()
-		defer tearDown(client)
-		var collectionName = "my-new-collection"
-		expectedOutput := fmt.Sprintf("Collection created: %v\n", collectionName)
-		buf := new(bytes.Buffer)
-		command.SetOut(buf)
-		command.SetErr(buf)
-		command.SetArgs([]string{"create", collectionName, "-x"})
-		c, err := command.ExecuteC()
-		require.NoError(t, err)
-		output := buf.String()
-		require.Equal(t, expectedOutput, output)
-		buf.Reset()
-		_, err = c.ExecuteC() // we execute the same command again, result is idempotent
-		require.NoError(t, err)
-		assertCollectionExists(t, client, collectionName)
-		require.Equal(t, expectedOutput, output)
-	})
-
 	t.Run("Create Collection with M flag long", func(t *testing.T) {
 		client := setup()
 		defer tearDown(client)
