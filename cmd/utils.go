@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"chroma/utils"
@@ -31,4 +32,42 @@ func getClient(serverAlias string) (*chroma.Client, error) {
 		return nil, err
 	}
 	return client, nil
+}
+
+func collectionExists(client *chroma.Client, collectionName string) (bool, error) {
+	if client == nil {
+		return false, fmt.Errorf("client is nil")
+	}
+	if collectionName == "" {
+		return false, fmt.Errorf("collectionName is empty")
+	}
+	collections, err := client.ListCollections(context.TODO())
+	if err != nil {
+		return false, err
+	}
+	for _, collection := range collections {
+		if collection.Name == collectionName {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func getCollection(client *chroma.Client, collectionName string) (*chroma.Collection, error) {
+	if client == nil {
+		return nil, fmt.Errorf("client is nil")
+	}
+	if collectionName == "" {
+		return nil, fmt.Errorf("collectionName is empty")
+	}
+	collections, err := client.ListCollections(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	for _, collection := range collections {
+		if collection.Name == collectionName {
+			return collection, nil
+		}
+	}
+	return nil, fmt.Errorf("collection not found")
 }

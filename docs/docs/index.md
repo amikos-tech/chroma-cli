@@ -94,6 +94,28 @@ chroma create <collection-name> \
   -e/--ensure <create_if_not_exist>
 ```
 
+### Clone Collection
+
+```bash
+chroma clone <collection-name> <target-collection>
+```
+
+```bash
+chroma clone <collection-name> <target-collection>\
+  -s <alias> \
+  -p/--space <distance_functiom> \
+  -m/--m <hnsw:M> \
+  -u/--construction-ef <hnsw:efConstruction> \
+  -f/--search-ef <hnsw:search_ef> \
+  -b/--batch-size <hnsw:batch_size> \
+  -k/--sync-threshold <hnsw:sync_threshold> \
+  -n/--threads <hnsw:threads> \
+  -r/--resize-factor <hnsw:resize_factor> \
+  -e/--ensure <create_if_not_exist>
+```
+
+All flags are optional and applied to the target collection.
+
 ### Delete Collection
 
 ```bash

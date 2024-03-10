@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var CreateTenantCommand = &cobra.Command{
@@ -15,7 +16,13 @@ var CreateTenantCommand = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		tenantName := args[0]
-		client, err := getClient(alias)
+		activeAlias := viper.GetString("active_server")
+		alias, err := getStringFlagIfChangedWithDefault(cmd, "alias", &activeAlias)
+		if err != nil {
+			cmd.Printf("%v\n", err)
+			os.Exit(1)
+		}
+		client, err := getClient(*alias)
 		if err != nil {
 			cmd.Printf("%v\n", err)
 			os.Exit(1)
@@ -37,7 +44,13 @@ var CreateDatabaseCommand = &cobra.Command{
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		dbName := args[0]
-		client, err := getClient(alias)
+		activeAlias := viper.GetString("active_server")
+		alias, err := getStringFlagIfChangedWithDefault(cmd, "alias", &activeAlias)
+		if err != nil {
+			cmd.Printf("%v\n", err)
+			os.Exit(1)
+		}
+		client, err := getClient(*alias)
 		fmt.Printf("tenant: %v\n", tenant)
 		if err != nil {
 			cmd.Printf("%v\n", err)
@@ -65,9 +78,9 @@ var DBCommand = &cobra.Command{
 }
 
 func init() {
-	CreateTenantCommand.Flags().StringVarP(&alias, "alias", "s", "", "Server alias")
+	CreateTenantCommand.Flags().StringP("alias", "s", "", "Server alias")
 	CreateTenantCommand.ValidArgs = []string{"tenant"}
-	CreateDatabaseCommand.Flags().StringVarP(&alias, "alias", "s", "", "Server alias")
+	CreateDatabaseCommand.Flags().StringP("alias", "s", "", "Server alias")
 	CreateDatabaseCommand.Flags().StringVarP(&tenant, "tenant", "t", DefaultTenant, "Tenant name")
 	CreateDatabaseCommand.ValidArgs = []string{"db"}
 	TenantCommand.AddCommand(CreateTenantCommand)
