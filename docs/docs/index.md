@@ -111,7 +111,7 @@ chroma clone <collection-name> <target-collection>\
   -k/--sync-threshold <hnsw:sync_threshold> \
   -n/--threads <hnsw:threads> \
   -r/--resize-factor <hnsw:resize_factor> \
-  -e/--ensure <create_if_not_exist>
+  --embedding-function/-e <embedding-function>
 ```
 
 All flags are optional and applied to the target collection.

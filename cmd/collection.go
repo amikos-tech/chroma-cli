@@ -318,7 +318,6 @@ func cloneCollection(cmd *cobra.Command, args []string) error {
 		cmd.Printf("invalid meta: %v\n", err)
 		return err
 	}
-	fmt.Printf("metadatasVar: %v\n", *metadatasVar)
 	var metadatasVal = make(map[string]interface{})
 	for k, v := range sourceCollection.Metadata {
 		if k == types.HNSWSpace || k == types.HNSWM || k == types.HNSWConstructionEF || k == types.HNSWSearchEF || k == types.HNSWBatchSize || k == types.HNSWSyncThreshold || k == types.HNSWNumThreads || k == types.HNSWResizeFactor {
@@ -327,11 +326,8 @@ func cloneCollection(cmd *cobra.Command, args []string) error {
 		metadatasVal[k] = v
 	}
 
-	fmt.Printf("metadatasVal: %v\n", metadatasVal)
-
 	if cmd.Flag("meta").Changed {
 		for _, meta := range *metadatasVar {
-			fmt.Printf("meta: %v\n", meta)
 			kvPair := strings.Split(meta, "=")
 			if len(kvPair) != 2 {
 				cmd.Printf("invalid metadata format: %v. should be key=value.", meta)
@@ -355,6 +351,14 @@ func cloneCollection(cmd *cobra.Command, args []string) error {
 		return err
 	} else {
 		collectionOptions = append(collectionOptions, collection.WithHNSWDistanceFunction(df))
+	}
+	var hasEf = false
+	if efVal, err := embeddingFunctionForString(cmd.Flags().GetString("embedding-function")); err != nil {
+		cmd.Printf("invalid embedding-function: %v\n", err)
+		return err
+	} else if efVal != nil {
+		hasEf = true
+		collectionOptions = append(collectionOptions, collection.WithEmbeddingFunction(efVal))
 	}
 
 	if mVal != nil {
@@ -407,8 +411,10 @@ func cloneCollection(cmd *cobra.Command, args []string) error {
 			cmd.Printf("%v\n", err)
 			return err
 		}
-
-		_embeddings := result.Embeddings
+		var _embeddings []*types.Embedding
+		if !hasEf {
+			_embeddings = result.Embeddings
+		}
 		_, err = targetCollection.Add(context.TODO(), _embeddings, result.Metadatas, result.Documents, result.Ids)
 		if err != nil { // TODO not great to exit on first error but for now that will do. Consider rollback?
 			cmd.Printf("%v\n", err)
@@ -560,6 +566,7 @@ func init() {
 	CloneCollectionCommand.Flags().IntP("sync-threshold", "k", 1000, "hnsw:sync_threshold - The number of elements added to the HNSW index before the index is synced to disk.")
 	CloneCollectionCommand.Flags().IntP("threads", "n", -1, "hnsw:threads - The number of threads to use during index construction and searches. Defaults to the number of logical cores on the machine.")
 	CloneCollectionCommand.Flags().Float32P("resize-factor", "r", 1.2, "hnsw:resize_factor - This parameter is used by HNSW's hierarchical layers during insertion..")
+	CloneCollectionCommand.Flags().StringP("embedding-function", "e", "", "The name of the embedding function to use for the target collection")
 	CloneCollectionCommand.Flags().StringSliceVarP(&metaSlice, "meta", "a", []string{}, "Defines a single key-value attribute (KVP) to added to collection metadata.")
 	rootCmd.AddCommand(CloneCollectionCommand)
 }

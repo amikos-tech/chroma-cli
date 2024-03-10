@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -106,10 +107,6 @@ func addDummyRecordsToCollection(t *testing.T, client *chroma.Client, collection
 }
 func TestCreateCollectionCommand(t *testing.T) {
 	command := rootCmd
-	err := os.Setenv("TEST", "1")
-	if err != nil {
-		return
-	}
 
 	t.Run("Create Collection basic", func(t *testing.T) {
 		client := setup()
@@ -961,6 +958,33 @@ func TestCloneCollectionCommand(t *testing.T) {
 		assertCollectionExists(t, client, targetCollectionName)
 		assertCollectionHasMetadataAttr(t, client, targetCollectionName, "k", int32(100))
 		assertCollectionHasMetadataAttr(t, client, targetCollectionName, "my-key", "my-value")
+		require.Contains(t, output, "successfully cloned")
+		require.Contains(t, output, sourceCollectionName)
+		require.Contains(t, output, targetCollectionName)
+		require.Contains(t, output, "10")
+	})
+
+	t.Run("Clone Collection with openai ef", func(t *testing.T) {
+		_ = godotenv.Load("../.env")
+		if os.Getenv("OPENAI_API_KEY") == "" {
+			t.Skip("Skipping test as OPENAI_API_KEY is not set")
+		}
+		resetCloneCommandFlags()
+		client := setup()
+		defer tearDown(client)
+		var sourceCollectionName = "my-new-collection" + strconv.Itoa(rand.Int())
+		var targetCollectionName = "my-new-collection-copy" + strconv.Itoa(rand.Int())
+		helperCreateCollection(t, client, sourceCollectionName)
+		addDummyRecordsToCollection(t, client, sourceCollectionName, 10)
+		buf := new(bytes.Buffer)
+		command.SetOut(buf)
+		command.SetErr(buf)
+		command.SetArgs([]string{"clone", sourceCollectionName, targetCollectionName, "-e", "openai"})
+		_, err := command.ExecuteC()
+		require.NoError(t, err)
+		output := buf.String()
+		assertCollectionExists(t, client, sourceCollectionName)
+		assertCollectionExists(t, client, targetCollectionName)
 		require.Contains(t, output, "successfully cloned")
 		require.Contains(t, output, sourceCollectionName)
 		require.Contains(t, output, targetCollectionName)
