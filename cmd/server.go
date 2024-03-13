@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"chroma/utils"
+	"chromacli/utils"
 	"github.com/charmbracelet/huh"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"

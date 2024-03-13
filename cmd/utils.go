@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"chroma/utils"
+	"chromacli/utils"
 	"github.com/spf13/viper"
 
-	"github.com/amikos-tech/chroma-go"
+	chroma "github.com/amikos-tech/chroma-go"
 	"github.com/amikos-tech/chroma-go/cohere"
 	"github.com/amikos-tech/chroma-go/hf"
 	"github.com/amikos-tech/chroma-go/openai"
