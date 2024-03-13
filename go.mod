@@ -1,4 +1,4 @@
-module chroma
+module chromacli
 
 go 1.20
 
