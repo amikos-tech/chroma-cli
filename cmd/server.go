@@ -266,10 +266,9 @@ var ListCommand = &cobra.Command{
 var DBAndTenantDefaults bool
 
 var SwitchCommand = &cobra.Command{
-	Use:     "switch",
-	Aliases: []string{"sw"},
-	Short:   "Set active server",
-	Args:    cobra.MinimumNArgs(1),
+	Use:   "use",
+	Short: "Set active server",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		alias := args[0]
 		err := utils.SetActiveServer(alias)

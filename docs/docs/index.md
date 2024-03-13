@@ -39,19 +39,13 @@ Flags:
 - `-r` or `--defaults` - Uses the default tenant and database (this is mutually exclusive with `-t` and `-d` flags)
 
 ```bash
-chroma switch <server-alias>
-```
-
-With shorthands:
-
-```bash
-chroma sw <server-alias> -t <tenant> -d <database>
+chroma use <server-alias>
 ```
 
 With defaults:
 
 ```bash
-chroma sw <server-alias> -r
+chroma use <server-alias> -r
 ```
 
 ### List Collections

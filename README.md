@@ -17,7 +17,7 @@ Add a server:
 chroma server add my-chroma -H localhost -p 8000
 ```
 
-Create a colleciton:
+Create a collection:
 
 ```bash
 chroma create my-collection
