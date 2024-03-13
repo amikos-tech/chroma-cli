@@ -2,6 +2,47 @@
 
 This is an experiment in building CLI experiences for ChromaDB developers.
 
+## Getting started
+
+Installation:
+
+```bash
+go install github.com/amikos-tech/chroma-cli
+```
+
+
+Add a server:
+
+```bash
+chroma server add my-chroma -H localhost -p 8000
+```
+
+Create a colleciton:
+
+```bash
+chroma create my-collection
+```
+
+List collections:
+
+```bash
+chroma ls
+```
+
+Delete a collection:
+
+```bash
+chroma rm my-collection
+```
+
+Clone a collection:
+
+```bash
+chroma cp my-collection my-collection-clone
+```
+
+> Note: The source collection must have some records in it.
+
 ## Commands to support
 
 - ✅ Add Server (host, port) - `chroma server add <server-alias> -h <host> -p <port> -o`

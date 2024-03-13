@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chromacli/cmd"
+	"github.com/amikos-tech/chroma-cli/chroma/cmd"
 )
 
 var (

@@ -1,4 +1,4 @@
-module chromacli
+module github.com/amikos-tech/chroma-cli/chroma
 
 go 1.20
 

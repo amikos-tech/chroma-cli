@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/amikos-tech/chroma-cli/chroma/utils"
 	"os"
 	"strconv"
 
-	"chromacli/utils"
 	"github.com/charmbracelet/huh"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
@@ -163,8 +163,10 @@ var AddCommand = &cobra.Command{
 		// }
 		// if confirm {
 		var servers = viper.GetStringMap("servers")
-		if servers == nil {
+		var setActive = false
+		if servers == nil || len(servers) == 0 {
 			servers = make(map[string]interface{})
+			setActive = true
 		}
 		if !Overwrite {
 			if _, ok := servers[alias]; ok {
@@ -184,6 +186,13 @@ var AddCommand = &cobra.Command{
 		if err != nil {
 			cmd.Printf("unable to write to config file: %v\n", err)
 			os.Exit(1)
+		}
+		if setActive {
+			err := utils.SetActiveServer(alias)
+			if err != nil {
+				cmd.Printf("unable to write to config file: %v\n", err)
+				os.Exit(1)
+			}
 		}
 		cmd.Printf("Server '%v:%v' (secure=%v) successfully added!\n", host, actualPort, Secure)
 		//}

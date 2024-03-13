@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/amikos-tech/chroma-cli/chroma/utils"
 	"os"
 
-	"chromacli/utils"
 	"github.com/spf13/viper"
 
 	chroma "github.com/amikos-tech/chroma-go"
