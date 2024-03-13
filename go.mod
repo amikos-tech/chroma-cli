@@ -3,7 +3,7 @@ module chroma
 go 1.20
 
 require (
-	github.com/amikos-tech/chroma-go v0.0.1
+	github.com/amikos-tech/chroma-go v0.1.0
 	github.com/charmbracelet/huh v0.3.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/joho/godotenv v1.5.1
@@ -12,8 +12,6 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 )
-
-replace github.com/amikos-tech/chroma-go => ../chroma-go
 
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect
