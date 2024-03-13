@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/amikos-tech/chroma-cli/chroma/utils"
 	"os"
 	"strconv"
 
+	"github.com/amikos-tech/chroma-cli/chroma/utils"
 	"github.com/charmbracelet/huh"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
@@ -164,7 +164,7 @@ var AddCommand = &cobra.Command{
 		// if confirm {
 		var servers = viper.GetStringMap("servers")
 		var setActive = false
-		if servers == nil || len(servers) == 0 {
+		if len(servers) == 0 {
 			servers = make(map[string]interface{})
 			setActive = true
 		}
