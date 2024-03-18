@@ -9,22 +9,23 @@
 
 ### Add Server
 
+```bash
+chroma server add <server-alias> -H <host> -p <port>
+```
+
 Arguments:
 
 - `server-alias` - Alias for the server
 
 Flags:
 
-- `-h` or `--host` - Hostname of the server
+- `-H` or `--host` - Hostname of the server
 - `-p` or `--port` - Port of the server
-- `-o` or `--overwrite` - Overwrite existing server alias
-- `-s` or `--secure` - Use secure connection (TLS)
-- `-t` or `--tenant` - Tenant Name to use by default
-- `-d` or `--database` - Database Name to use by default
-
-```bash
-chroma server add <server-alias> -h <host> -p <port> -o -s -t <tenant> -d <database>
-```
+- `--overwrite` - Overwrite existing server alias
+- `--secure` - Use secure connection (TLS)
+- `--tenant` - Tenant Name to use by default
+- `--database` - Database Name to use by default
+- `--login` - Prompts the user for auth type and credentials
 
 ### Switch Server
 
