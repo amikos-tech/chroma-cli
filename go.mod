@@ -1,16 +1,18 @@
 module github.com/amikos-tech/chroma-cli/chroma
 
-go 1.20
+go 1.21
+
+toolchain go1.22.0
 
 require (
-	github.com/amikos-tech/chroma-go v0.1.0
+	github.com/amikos-tech/chroma-go v0.1.3
 	github.com/charmbracelet/huh v0.3.0
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/joho/godotenv v1.5.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (

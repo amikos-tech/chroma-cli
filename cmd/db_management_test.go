@@ -29,7 +29,7 @@ func getRandomName(prefix string) string {
 }
 
 func TestCreateTenant(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 
 	t.Run("Create tenant long", func(t *testing.T) {
 		client := setup()
@@ -61,7 +61,7 @@ func TestCreateTenant(t *testing.T) {
 }
 
 func TestCreateDatabase(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 	t.Run("Create db default-tenant long", func(t *testing.T) {
 		err := CreateDatabaseCommand.Flag("tenant").Value.Set(DefaultTenant)
 		require.NoError(t, err)

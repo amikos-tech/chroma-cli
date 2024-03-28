@@ -10,7 +10,7 @@ import (
 
 func TestVersionCommand(t *testing.T) {
 	// Create a new command
-	command := rootCmd
+	command := RootCmd
 
 	t.Run("Version", func(t *testing.T) {
 		client := setup()

@@ -85,6 +85,6 @@ func init() {
 	CreateDatabaseCommand.ValidArgs = []string{"db"}
 	TenantCommand.AddCommand(CreateTenantCommand)
 	DBCommand.AddCommand(CreateDatabaseCommand)
-	rootCmd.AddCommand(TenantCommand)
-	rootCmd.AddCommand(DBCommand)
+	RootCmd.AddCommand(TenantCommand)
+	RootCmd.AddCommand(DBCommand)
 }

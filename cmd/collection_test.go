@@ -106,7 +106,7 @@ func addDummyRecordsToCollection(t *testing.T, client *chroma.Client, collection
 	require.NoError(t, err)
 }
 func TestCreateCollectionCommand(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 
 	t.Run("Create Collection basic", func(t *testing.T) {
 		client := setup()
@@ -628,7 +628,7 @@ func TestCreateCollectionCommand(t *testing.T) {
 }
 
 func TestListCollectionsCommand(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 
 	t.Run("List Collections long", func(t *testing.T) {
 		client := setup()
@@ -664,7 +664,7 @@ func TestListCollectionsCommand(t *testing.T) {
 }
 
 func TestDeleteCollectionCommand(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 
 	t.Run("Delete Collection long", func(t *testing.T) {
 		client := setup()
@@ -700,7 +700,7 @@ func TestDeleteCollectionCommand(t *testing.T) {
 }
 
 func TestCloneCollectionCommand(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 
 	t.Run("Clone Collection long", func(t *testing.T) {
 		resetCloneCommandFlags()
@@ -992,7 +992,7 @@ func TestCloneCollectionCommand(t *testing.T) {
 	})
 }
 func TestCloneCollectionCommandWithSource(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 	t.Run("Clone Collection with source with m", func(t *testing.T) {
 		resetCloneCommandFlags()
 		client := setup()
@@ -1222,7 +1222,7 @@ func TestCloneCollectionCommandWithSource(t *testing.T) {
 }
 
 func TestCloneCollectionCommandWithSourceOverride(t *testing.T) {
-	command := rootCmd
+	command := RootCmd
 	t.Run("Clone Collection with source with m override in target", func(t *testing.T) {
 		resetCloneCommandFlags()
 		client := setup()

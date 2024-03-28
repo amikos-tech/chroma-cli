@@ -535,8 +535,8 @@ var collectionCommand = &cobra.Command{
 var metaSlice = make([]string, 0)
 
 func init() {
-	rootCmd.AddCommand(collectionCommand)
-	rootCmd.AddCommand(ListCollectionsCommand)
+	RootCmd.AddCommand(collectionCommand)
+	RootCmd.AddCommand(ListCollectionsCommand)
 	collectionCommand.AddCommand(ListCollectionsCommand)
 	ListCollectionsCommand.Flags().StringP("alias", "s", "", "Server alias name. If not provided, the active server will be used.")
 	CreateCollectionCommand.Flags().String("name", "", "Name of the collection")
@@ -552,10 +552,10 @@ func init() {
 	CreateCollectionCommand.Flags().Float32P("resize-factor", "r", 1.2, "hnsw:resize_factor - This parameter is used by HNSW's hierarchical layers during insertion..")
 	CreateCollectionCommand.Flags().StringSliceVarP(&metaSlice, "meta", "a", []string{}, "Defines a single key-value attribute (KVP) to added to collection metadata.")
 	collectionCommand.AddCommand(CreateCollectionCommand)
-	rootCmd.AddCommand(CreateCollectionCommand)
+	RootCmd.AddCommand(CreateCollectionCommand)
 	DeleteCollectionCommand.Flags().StringP("alias", "s", "", "Server alias name. If not provided, the active server will be used.")
 	collectionCommand.AddCommand(DeleteCollectionCommand)
-	rootCmd.AddCommand(DeleteCollectionCommand)
+	RootCmd.AddCommand(DeleteCollectionCommand)
 	CloneCollectionCommand.Flags().IntP("clone-batch-size", "z", 100, "The batch size for cloning from one collection to another.")
 	CloneCollectionCommand.Flags().StringP("alias", "s", "", "Server alias name. If not provided, the active server will be used.")
 	CloneCollectionCommand.Flags().StringP("space", "p", string(types.L2), "Distance metric to use for the collection")
@@ -568,5 +568,5 @@ func init() {
 	CloneCollectionCommand.Flags().Float32P("resize-factor", "r", 1.2, "hnsw:resize_factor - This parameter is used by HNSW's hierarchical layers during insertion..")
 	CloneCollectionCommand.Flags().StringP("embedding-function", "e", "", "The name of the embedding function to use for the target collection")
 	CloneCollectionCommand.Flags().StringSliceVarP(&metaSlice, "meta", "a", []string{}, "Defines a single key-value attribute (KVP) to added to collection metadata.")
-	rootCmd.AddCommand(CloneCollectionCommand)
+	RootCmd.AddCommand(CloneCollectionCommand)
 }

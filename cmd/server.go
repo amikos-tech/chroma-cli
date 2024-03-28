@@ -102,6 +102,12 @@ func getDatabase(changed bool) (string, error) {
 	return Database, nil
 }
 
+const (
+	EnvChromaAPIToken  = "CHROMA_API_TOKEN"
+	EnvChromaXAPIToken = "CHROMA_X_API_TOKEN"
+	EnvChromaBasicAuth = "CHROMA_BASIC_AUTH"
+)
+
 var Host string
 var Port string
 var Overwrite bool
@@ -180,6 +186,58 @@ var AddCommand = &cobra.Command{
 			"secure":   Secure,
 			"tenant":   tenant,
 			"database": database,
+		}
+		var envConfigProvided = false
+		var _authType = AuthTypeNone
+		var _authToken string
+		if os.Getenv(EnvChromaAPIToken) != "" {
+			envConfigProvided = true
+			_authType = AuthTypeToken
+			_authToken = os.Getenv(EnvChromaAPIToken)
+		}
+		if os.Getenv(EnvChromaXAPIToken) != "" {
+			envConfigProvided = true
+			_authType = AuthTypeXToken
+			_authToken = os.Getenv(EnvChromaXAPIToken)
+		}
+		if os.Getenv(EnvChromaBasicAuth) != "" {
+			envConfigProvided = true
+			_authType = AuthTypeBasic
+			_authToken = os.Getenv(EnvChromaBasicAuth)
+		}
+		fmt.Printf("login: %v\n", cmd.Flags().Changed("login"))
+		fmt.Printf("envConfigProvided: %v\n", envConfigProvided)
+		if !envConfigProvided && cmd.Flags().Changed("login") {
+			err := huh.NewSelect[AuthType]().
+				Title("Authorization Type").
+				Options(
+					huh.NewOption("Basic", AuthTypeBasic),
+					huh.NewOption("Token (Authorization)", AuthTypeToken),
+					huh.NewOption("Token (X-Chroma-Token)", AuthTypeXToken),
+				).
+				Value(&_authType).Run()
+			if err != nil {
+				return // TODO fix this
+			}
+			if _authType == AuthTypeBasic {
+				err := huh.NewInput().Value(&_authToken).Title("Basic Auth").Placeholder("username:password").Run()
+				if err != nil {
+					cmd.Printf("unable to get basic auth: %v\n", err)
+					os.Exit(1)
+				}
+			} else {
+				err := huh.NewInput().Value(&_authToken).Title("Token").Placeholder("token").Run()
+				if err != nil {
+					cmd.Printf("unable to get token: %v\n", err)
+					os.Exit(1)
+				}
+			}
+		}
+		if _authType != AuthTypeNone {
+			var _authInfo = make(map[string]string)
+			_authInfo["type"] = string(_authType)
+			_authInfo["token"] = _authToken
+			servers[alias].(map[string]interface{})["auth"] = _authInfo
 		}
 		viper.Set("servers", servers)
 		err := viper.WriteConfig()
@@ -265,7 +323,7 @@ var ListCommand = &cobra.Command{
 
 var DBAndTenantDefaults bool
 
-var SwitchCommand = &cobra.Command{
+var UseCommand = &cobra.Command{
 	Use:   "use",
 	Short: "Set active server",
 	Args:  cobra.MinimumNArgs(1),
@@ -338,25 +396,35 @@ var serverCmd = &cobra.Command{
 	Long:    ``,
 }
 
+type AuthType string
+
+const (
+	AuthTypeNone   AuthType = "none"
+	AuthTypeBasic  AuthType = "basic"
+	AuthTypeToken  AuthType = "token"
+	AuthTypeXToken AuthType = "x-token"
+)
+
 func init() {
 	AddCommand.Flags().StringVarP(&Host, "host", "H", "", "Chroma server host")
 	AddCommand.Flags().StringVarP(&Port, "port", "p", "", "Chroma server port")
-	AddCommand.Flags().BoolVarP(&Overwrite, "overwrite", "o", false, "Overwrite existing server with the same alias")
-	AddCommand.Flags().BoolVarP(&Secure, "secure", "s", false, "Use secure connection (https).")
-	AddCommand.Flags().StringVarP(&Tenant, "tenant", "t", DefaultTenant, "Default tenant for the server")
-	AddCommand.Flags().StringVarP(&Database, "database", "d", DefaultDatabase, "Default database for the server")
+	AddCommand.Flags().BoolVarP(&Overwrite, "force", "f", false, "Overwrite existing server with the same alias")
+	AddCommand.Flags().BoolVar(&Secure, "secure", false, "Use secure connection (https).")
+	AddCommand.Flags().Bool("login", false, "Authenticate with the server. If the following env vars are not provided the user will be prompted to enter the login information - CHROMA_API_TOKEN or CHROMA_BASIC_AUTH.")
+	AddCommand.Flags().StringVar(&Tenant, "tenant", DefaultTenant, "Default tenant for the server")
+	AddCommand.Flags().StringVar(&Database, "database", DefaultDatabase, "Default database for the server")
 	// AddCommand.MarkFlagsRequiredTogether("host", "port")
 	AddCommand.ValidArgs = []string{"alias"}
 	RmCommand.ValidArgs = []string{"alias"}
 	RmCommand.Flags().BoolVarP(&ForceDelete, "force", "f", false, "Force remove server without confirmation")
-	SwitchCommand.Flags().StringVarP(&Tenant, "tenant", "t", "", "Default tenant for the server")
-	SwitchCommand.Flags().StringVarP(&Database, "database", "d", "", "Default database for the server")
-	SwitchCommand.Flags().BoolVarP(&DBAndTenantDefaults, "defaults", "r", false, "Reset active tenant and database to defaults")
-	SwitchCommand.MarkFlagsMutuallyExclusive("tenant", "defaults")
-	SwitchCommand.MarkFlagsMutuallyExclusive("database", "defaults")
-	rootCmd.AddCommand(serverCmd)
+	UseCommand.Flags().StringVarP(&Tenant, "tenant", "t", "", "Default tenant for the server")
+	UseCommand.Flags().StringVarP(&Database, "database", "d", "", "Default database for the server")
+	UseCommand.Flags().BoolVar(&DBAndTenantDefaults, "defaults", false, "Reset active tenant and database to defaults")
+	UseCommand.MarkFlagsMutuallyExclusive("tenant", "defaults")
+	UseCommand.MarkFlagsMutuallyExclusive("database", "defaults")
+	RootCmd.AddCommand(serverCmd)
 	serverCmd.AddCommand(AddCommand)
 	serverCmd.AddCommand(ListCommand)
 	serverCmd.AddCommand(RmCommand)
-	rootCmd.AddCommand(SwitchCommand)
+	RootCmd.AddCommand(UseCommand)
 }

@@ -52,11 +52,14 @@ chroma cp my-collection my-collection-clone
 - ✅ List Collections - `chroma ls` or `chroma c/collection ls`
 - ✅ Create Collection - `chroma create <collection-name>` or `chroma c/collection create <collection-name> -e -d`
 - ✅ Delete Collection - `chroma remove <collection-name>` or `chroma c/collection rm <collection-name>`
-- 🚫 Copy Collection - `chroma copy <collection-name> <new-collection-name>` or `chroma c/collection cp <collection-name> <new-collection-name>`
+- ✅ Copy Collection - `chroma copy <collection-name> <new-collection-name>` or `chroma c/collection cp <collection-name> <new-collection-name>`
   or `chroma c cp <collection-name> <new-collection-name>` (remote to local or local to remote will be supported in the
   near future)
 - 🚫 List Documents - `chroma docs ls <collection-name>` (using bubblegum interactive tables)
 - ✅ App version (via -ldflags) - `chroma --version`
+- 🚫 Run - run ChromaDB in various modes (Chroma cloud, local python, local docker, k8s, cloud service providers)
+- 🚫 Stack - create manifests for deploying ChromaDB in various modes (local docker compose, k8s, terraform for cloud service providers) - this is an online service
+- 🚫 Auth - login, logout, token refresh
 - 🚫 App help
 - ✅ Chroma version
 - 🚫 Chroma docs

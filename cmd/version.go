@@ -11,7 +11,7 @@ import (
 var VersionCommand = &cobra.Command{
 	Use:     "version",
 	Aliases: []string{"v"},
-	Short:   "Get the version of the Chroma Server",
+	Short:   "Get the version of the Chroma Server. If alias is not specified the currently active server is used.",
 	Run: func(cmd *cobra.Command, args []string) {
 		activeAlias := viper.GetString("active_server")
 		alias, err := getStringFlagIfChangedWithDefault(cmd, "alias", &activeAlias)
@@ -35,5 +35,5 @@ var VersionCommand = &cobra.Command{
 
 func init() {
 	VersionCommand.Flags().StringP("alias", "s", "", "Server alias")
-	rootCmd.AddCommand(VersionCommand)
+	RootCmd.AddCommand(VersionCommand)
 }
